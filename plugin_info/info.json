@@ -1,0 +1,20 @@
+{
+	"id" : "attestationcovid",
+	"name" : "Attestation covid",
+	"description" : "Plugin qui permet de générer automatiquement une attestation de sortie en période de confinement",
+	"licence" : "AGPL",
+	"author" : "Eric ROBERT",
+	"require" : "4.0",
+	"category" : "organization",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
+	"documentation" : "https://jeedom.github.io/plugin-template/#language#/",
+	"link" : {
+		"forum":"Lien vers le forum",
+		"video" : "Lien vers une video"
+	},
+	"language" : ["fr_FR"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","mobile","v4"]
+}
