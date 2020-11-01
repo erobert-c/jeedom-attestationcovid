@@ -9,8 +9,8 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
-	"documentation" : "https://jeedom.github.io/plugin-template/#language#/",
+	"changelog" : "https://erobert-c.github.io/jeedom-attestationcovid/fr_FR/changelog",
+	"documentation" : "https://erobert-c.github.io/jeedom-attestationcovid/fr_FR/",
 	"link" : {
 		"forum":"Lien vers le forum",
 		"video" : "Lien vers une video"
