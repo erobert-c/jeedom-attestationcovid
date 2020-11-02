@@ -44,7 +44,7 @@ class attestationcovid extends eqLogic {
     */
       public static function cronDaily() {
         log::add(self::_NAME, 'debug', 'Suppression des attestations');
-        cleanUp();
+        $this->cleanUp();
       }
 
   private function cleanUp() {
