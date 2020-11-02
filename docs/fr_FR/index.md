@@ -33,5 +33,6 @@ En exécutant une des commandes, une attestation est générée, reprenant les c
 ## FAQ
 * Le plugin utilise t-il des API externes?
 Non, la génération se fait entièrement en local. Un template de base est contenu dans les ressources du plugin et est utilisé pour générer l'attestation.
+Cependant, le plugin s'appuie sur les librairies [FPDF](http://www.fpdf.org/), [FPDI](https://www.setasign.com/products/fpdi/downloads/) et [PHP QRCode](http://phpqrcode.sourceforge.net/).
 * Peut-on générer une attestation avec plusieurs motifs de sortie?
 Pas pour le moment.
