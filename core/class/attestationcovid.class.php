@@ -44,10 +44,10 @@ class attestationcovid extends eqLogic {
     */
       public static function cronDaily() {
         log::add(self::_NAME, 'debug', 'Suppression des attestations');
-        $this->cleanUp();
+	self::cleanUp();
       }
 
-  private function cleanUp() {
+  private static function cleanUp() {
     $patternAttestation = 'attestation_*.pdf';
     $patternQR = 'qr_*.png';
 
@@ -361,12 +361,15 @@ class attestationcovid extends eqLogic {
       $this->initConfiguration();
       $options = array();
       $path = self::_RESOURCE_PATH.'attestation_'.$this->_firstname.'.pdf';
+      if (!file_exists($path)) {
+        throw new Exception(__('Pas d\'attestation trouvée pour '.$this->_firstname.'. Générez une attestation avant d\'essayer d\'en envoyer une', __FILE__));
+      }
       $options['files'] = array($path);
       log::add(self::_NAME, 'debug', 'Envoi du fichier '.$path);
       $cmd = cmd::byId(str_replace('#', '', $this->getConfiguration('sendCmd')));
       if (!is_object($cmd)) {
         log::add(self::_NAME, 'error', 'La commande d\'envoi n\'est pas correctement configurée');
-        return;
+	throw new Exception(__('La commande d\'envoi n\'est pas configurée', __FILE__));
       }
       if ($date_day == NULL) {
         log::add(self::_NAME, 'debug', 'Envoi de la dernière attestation générée pour '.$this->_firstname);
@@ -379,6 +382,7 @@ class attestationcovid extends eqLogic {
         $cmd->execCmd($options);
       } catch (Exception $e) {
         log::add('attestationcovid', 'error', __('Erreur lors de l\'envoi de l\'attestation : ', __FILE__) . $cmd->getHumanName() . ' => ' . log::exception($e));
+	throw new Exception(__('Erreur lors de l\'envoi de l\'attestation', __FILE__));
       }
     }
 }
