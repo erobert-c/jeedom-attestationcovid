@@ -44,7 +44,7 @@ class attestationcovid extends eqLogic {
     */
       public static function cronDaily() {
         log::add(self::_NAME, 'debug', 'Suppression des attestations');
-	self::cleanUp();
+        self::cleanUp();
       }
 
   private static function cleanUp() {
@@ -283,52 +283,56 @@ class attestationcovid extends eqLogic {
 
       $pdf = new Fpdi();
       $pdf->AddPage();
-      $pdf->setSourceFile(self::_RESOURCE_PATH . 'template.pdf');
+      $pdf->setSourceFile(self::_RESOURCE_PATH . 'certificate.pdf');
       $pageId = $pdf->importPage(1);
       $size = $pdf->getTemplateSize($pageId);
       $pdf->useTemplate($pageId, 0, 0, $size['width'], $size['height'], true);
       $pdf->SetFont('Arial', '', '11');
       $pdf->SetTextColor(0,0,0);
       $yReasons = array(
-        "travail" => 89,
-        "achats" => 106,
-        "sante" => 123,
-        "famille" => 136,
-        "hanicap" => 149,
-        "sport_animaux" => 158,
-        "convocation" => 184,
-        "missions" => 192,
-        "enfants" => 201
+        "travail" => 92,
+        "achats" => 108,
+        "sante" => 128,
+        "famille" => 142,
+        "handicap" => 156,
+        "sport_animaux" => 170,
+        "convocation" => 192,
+        "missions" => 206,
+        "enfants" => 222
       );
 
       //Nom/prenom:
-      $pdf->SetXY(42, 49);
+      $pdf->SetXY(40, 50);
       //first parameter defines the line height
       $pdf->Write(0, $this->_firstname . ' ' . $this->_lastname);
 
       // Naissance:
-      $pdf->SetXY(46, 55);
-      $pdf->Write(0, $this->_birthdate . ' a ' . $this->_birthplace);
+      $pdf->SetXY(40, 58);
+      $pdf->Write(0, $this->_birthdate);
+      $pdf->SetXY(104, 58);
+      $pdf->Write(0, $this->_birthplace);
 
       // Adresse
-      $pdf->SetXY(46, 61);
+      $pdf->SetXY(45, 66);
       $pdf->Write(0, $this->_address . ' ' . $this->_postalcode . ' ' . $this->_city);
 
       // $reason
-      $pdf->SetXY(25, $yReasons[$motif]);
+      $pdf->SetXY(26, $yReasons[$motif]);
+      $pdf->SetFont('Arial', '', '15');
       $pdf->Write(0, 'X');
+      $pdf->SetFont('Arial', '', '11');
 
       // Date
-      $pdf->SetXY(36, 213);
+      $pdf->SetXY(36, 234);
       $pdf->Write(0, $this->_city);
-      $pdf->SetXY(31, 220);
+      $pdf->SetXY(31, 243);
       $pdf->Write(0, $date_day);
-      $pdf->SetXY(99, 220);
+      $pdf->SetXY(88, 242);
       $pdf->Write(0, $time_day);
 
       $qrPath = self::_RESOURCE_PATH.'qr_'.$this->_firstname.'.png';
       $data = $this->generateQR($date_day, $time_day, $motif, $qrPath);
-      $pdf->Image($qrPath, 137, 205, 45, 45, 'PNG');
+      $pdf->Image($qrPath, 140, 220, 43, 43, 'PNG');
 
       // second ldap_control_paged_result
       $pdf->AddPage();
@@ -369,7 +373,7 @@ class attestationcovid extends eqLogic {
       $cmd = cmd::byId(str_replace('#', '', $this->getConfiguration('sendCmd')));
       if (!is_object($cmd)) {
         log::add(self::_NAME, 'error', 'La commande d\'envoi n\'est pas correctement configurée');
-	throw new Exception(__('La commande d\'envoi n\'est pas configurée', __FILE__));
+        throw new Exception(__('La commande d\'envoi n\'est pas configurée', __FILE__));
       }
       if ($date_day == NULL) {
         log::add(self::_NAME, 'debug', 'Envoi de la dernière attestation générée pour '.$this->_firstname);
@@ -382,7 +386,7 @@ class attestationcovid extends eqLogic {
         $cmd->execCmd($options);
       } catch (Exception $e) {
         log::add('attestationcovid', 'error', __('Erreur lors de l\'envoi de l\'attestation : ', __FILE__) . $cmd->getHumanName() . ' => ' . log::exception($e));
-	throw new Exception(__('Erreur lors de l\'envoi de l\'attestation', __FILE__));
+        throw new Exception(__('Erreur lors de l\'envoi de l\'attestation', __FILE__));
       }
     }
 }
