@@ -243,7 +243,7 @@ foreach (jeeObject::all() as $object) {
 <table id="table_cmd" class="table table-bordered table-condensed">
     <thead>
         <tr>
-            <th>{{Nom}}</th><th>{{Type}}</th><th>{{Action}}</th>
+            <th>{{ID}}</th><th>{{Nom}}</th><th>{{Type}}</th><th>{{Action}}</th>
         </tr>
     </thead>
     <tbody>

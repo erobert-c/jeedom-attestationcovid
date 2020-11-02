@@ -126,6 +126,7 @@ class attestationcovid extends eqLogic {
       $info->setEqLogic_id($this->getId());
       $info->setType('info');
       $info->setSubType('string');
+      $info->setOrder(1);
       $info->save();
 
       // Travail
@@ -138,6 +139,7 @@ class attestationcovid extends eqLogic {
       $travail->setLogicalId('travail');
       $travail->setType('action');
       $travail->setSubType('other');
+      $travail->setOrder(2);
       $travail->save();
 
       // Achats
@@ -150,6 +152,7 @@ class attestationcovid extends eqLogic {
       $achats->setLogicalId('achats');
       $achats->setType('action');
       $achats->setSubType('other');
+      $achats->setOrder(3);
       $achats->save();
 
       // sante
@@ -162,6 +165,7 @@ class attestationcovid extends eqLogic {
       $sante->setLogicalId('sante');
       $sante->setType('action');
       $sante->setSubType('other');
+      $sante->setOrder(4);
       $sante->save();
 
       // famille
@@ -174,6 +178,7 @@ class attestationcovid extends eqLogic {
       $famille->setLogicalId('famille');
       $famille->setType('action');
       $famille->setSubType('other');
+      $famille->setOrder(5);
       $famille->save();
 
       // handicap
@@ -186,6 +191,7 @@ class attestationcovid extends eqLogic {
       $handicap->setLogicalId('handicap');
       $handicap->setType('action');
       $handicap->setSubType('other');
+      $handicap->setOrder(6);
       $handicap->save();
 
       // sports_animaux
@@ -198,6 +204,7 @@ class attestationcovid extends eqLogic {
       $animaux->setLogicalId('sport_animaux');
       $animaux->setType('action');
       $animaux->setSubType('other');
+      $animaux->setOrder(7);
       $animaux->save();
 
       // convocation
@@ -210,6 +217,7 @@ class attestationcovid extends eqLogic {
       $convocation->setLogicalId('convocation');
       $convocation->setType('action');
       $convocation->setSubType('other');
+      $convocation->setOrder(8);
       $convocation->save();
 
       // missions
@@ -222,6 +230,7 @@ class attestationcovid extends eqLogic {
       $missions->setLogicalId('missions');
       $missions->setType('action');
       $missions->setSubType('other');
+      $missions->setOrder(9);
       $missions->save();
 
       // enfants
@@ -234,6 +243,7 @@ class attestationcovid extends eqLogic {
       $enfants->setLogicalId('enfants');
       $enfants->setType('action');
       $enfants->setSubType('other');
+      $enfants->setOrder(10);
       $enfants->save();
 
       // Envoi
@@ -246,6 +256,7 @@ class attestationcovid extends eqLogic {
       $send->setLogicalId('sendLast');
       $send->setType('action');
       $send->setSubType('other');
+      $send->setOrder(11);
       $send->save();
     }
 
