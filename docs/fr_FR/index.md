@@ -14,9 +14,7 @@ Vous pouvez alors définir plusieurs équipements, correspondant à un template 
 ### Onglet Equipement
 Cet onglet comporte les informations de bases qui seront utilisées pour la génération de l'attestation. Toutes les coordonnées sont nécessaire pour pouvoir sauvegarder l'équipement. Ces informations sont celles de la personne pour qui l'attestation sera générée.
 
-Sélectionnez la commande qui sera utilisée pour l'envoi de l'attestation, et si l'envoi doit se faire automatiquement à a génération.
-
-**NOTE**: Pour le moment, si l'envoi automatique n'est pas activé, il n'est pas possible d'envoyer l'attestation qui est générée. Donc *cochez l'envoi automatique*.
+Sélectionnez la commande qui sera utilisée pour l'envoi de l'attestation, et si l'envoi doit se faire automatiquement à a génération. Si vous ne cochez pas cette case, il faudra envoyer l'attestation avec la commande 'Envoi';
 
 ### Onglet commandes
 Les commandes sont automatiquement générée à la création de l'équipement et correspondent aux différents motifs de sortie:

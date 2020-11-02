@@ -235,6 +235,18 @@ class attestationcovid extends eqLogic {
       $enfants->setType('action');
       $enfants->setSubType('other');
       $enfants->save();
+
+      // Envoi
+      $send = $this->getCmd(null, 'sendLast');
+      if (!is_object($send)) {
+        $send = new attestationcovidCmd();
+        $send->setName(__('Envoi', __FILE__));
+      }
+      $send->setEqLogic_id($this->getId());
+      $send->setLogicalId('sendLast');
+      $send->setType('action');
+      $send->setSubType('other');
+      $send->save();
     }
 
  // Fonction exécutée automatiquement avant la suppression de l'équipement
@@ -345,7 +357,8 @@ class attestationcovid extends eqLogic {
       return $data;
     }
 
-    private function send($date_day, $time_day, $motifs) {
+    public function send($date_day, $time_day, $motifs) {
+      $this->initConfiguration();
       $options = array();
       $path = self::_RESOURCE_PATH.'attestation_'.$this->_firstname.'.pdf';
       $options['files'] = array($path);
@@ -355,8 +368,13 @@ class attestationcovid extends eqLogic {
         log::add(self::_NAME, 'error', 'La commande d\'envoi n\'est pas correctement configurée');
         return;
       }
-      $options['message'] = $this->_firstname.' voici votre attestation du '
+      if ($date_day == NULL) {
+        log::add(self::_NAME, 'debug', 'Envoi de la dernière attestation générée pour '.$this->_firstname);
+        $options['message'] = $this->_firstname.' voici la dernière attestation générée';
+      } else {
+        $options['message'] = $this->_firstname.' voici votre attestation du '
                               .$date_day.' a '.$time_day.'. Motifs: '.str_replace('_', '\_', $motifs);
+      }
       try {
         $cmd->execCmd($options);
       } catch (Exception $e) {
@@ -372,7 +390,12 @@ class attestationcovidCmd extends cmd {
   // Exécution d'une commande
      public function execute($_options = array()) {
        $eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
-       $info = $eqlogic->generate($this->getLogicalId());
+       if ($this->getLogicalId() === 'sendLast') {
+         $eqlogic->send(NULL, NULL, NULL);
+       } else {
+         $info = $eqlogic->generate($this->getLogicalId());
+       }
+
        $eqlogic->checkAndUpdateCmd('attestation', $info);
      }
 
