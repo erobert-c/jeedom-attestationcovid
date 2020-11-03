@@ -384,7 +384,7 @@ class attestationcovid extends eqLogic
     }
     log::add(self::_NAME, 'info', 'Le mode par défaut sera réactivé automatiquement après '.$delay.' minute(s), ou après la génération de l\'attestation');
     $backToDefault = strtotime('now') + $delay * 60;
-    $cron = new Cron();
+    $cron = new cron();
     $cron->setClass('attestationcovid');
     $cron->setFunction('goBackToDefault');
     $cron->setOption(array('attestation_id' => intval($this->getId())));
