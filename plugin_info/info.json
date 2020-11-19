@@ -6,7 +6,7 @@
 	"author" : "Eric ROBERT",
 	"require" : "4.0",
 	"category" : "organization",
-	"hasDependency" : false,
+	"hasDependency" : true,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
 	"changelog" : "https://erobert-c.github.io/jeedom-attestationcovid/fr_FR/changelog",

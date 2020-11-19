@@ -22,7 +22,6 @@ use setasign\Fpdi\Fpdi;
 
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 require_once __DIR__ . '/../../3rdparty/fpdf/fpdf.php';
-require_once __DIR__ . '/../../3rdparty/fpdi/src/autoload.php';
 require_once __DIR__ . '/../../3rdparty/phpqrcode/qrlib.php';
 
 class attestationcovid extends eqLogic
@@ -40,6 +39,25 @@ class attestationcovid extends eqLogic
   private $_city;
 
   /*     * ***********************Methode static*************************** */
+  public static function dependancy_install()
+  {
+    log::remove(__CLASS__ . '_update');
+    return array('script' => dirname(__FILE__) . '/../../resources/install.sh', 'log' => log::getPathToLog(__CLASS__ . '_update'));
+  }
+
+  public static function dependancy_info()
+  {
+    $return = array();
+    $return['log'] = __CLASS__ . '_update';
+    $return['progress_file'] = '/tmp/dependency_attestationcovid_in_progress';
+    $cmd = system::getCmdSudo() . '/bin/bash ' . dirname(__FILE__) . '/../../resources/install_check.sh';
+    if (exec($cmd) == "ok") {
+      $return['state'] = 'ok';
+    } else {
+      $return['state'] = 'nok';
+    }
+    return $return;
+  }
   /*
      * Fonction exécutée automatiquement tous les jours par Jeedom
      * - Nettoyage des attestation et QR code générés
@@ -73,7 +91,7 @@ class attestationcovid extends eqLogic
       return;
     }
     $mode = $eqLogic->getConfiguration('mode') == 'mono' ? 'Motif unique' : 'Plusieurs motifs';
-    log::add(self::_NAME, 'info', $eqLogic->getHumanName().' Retour à la configuration par défaut pour l\'envoi des attestations: '.$mode);
+    log::add(self::_NAME, 'info', $eqLogic->getHumanName() . ' Retour à la configuration par défaut pour l\'envoi des attestations: ' . $mode);
     $eqLogic->checkAndUpdateCmd('overrideMode', 0);
   }
 
@@ -382,7 +400,7 @@ class attestationcovid extends eqLogic
     if (empty($delay)) {
       $delay = 3;
     }
-    log::add(self::_NAME, 'info', 'Le mode par défaut sera réactivé automatiquement après '.$delay.' minute(s), ou après la génération de l\'attestation');
+    log::add(self::_NAME, 'info', 'Le mode par défaut sera réactivé automatiquement après ' . $delay . ' minute(s), ou après la génération de l\'attestation');
     $backToDefault = strtotime('now') + $delay * 60;
     $cron = new cron();
     $cron->setClass('attestationcovid');
@@ -420,73 +438,81 @@ class attestationcovid extends eqLogic
     $this->cleanCronOverride();
     self::goBackToDefault(array('attestation_id' => $this->getId()));
 
-    return $this->createPdf($date_day, $time_day);
+    return $this->fillPdf($date_day, $time_day);
   }
 
-  private function createPdf($date_day, $time_day)
+  private function fillPdf($date_day, $time_day)
   {
-    $pdf = new Fpdi();
-    $pdf->AddPage();
-    $pdf->setSourceFile(self::_RESOURCE_PATH . 'certificate.pdf');
-    $pageId = $pdf->importPage(1);
-    $size = $pdf->getTemplateSize($pageId);
-    $pdf->useTemplate($pageId, 0, 0, $size['width'], $size['height'], true);
-    $pdf->SetFont('Arial', '', '11');
-    $pdf->SetTextColor(0, 0, 0);
-    $yReasons = array(
-      "travail" => 92,
-      "achats" => 108,
-      "sante" => 128,
-      "famille" => 142,
-      "handicap" => 156,
-      "sport_animaux" => 170,
-      "convocation" => 192,
-      "missions" => 206,
-      "enfants" => 222
-    );
-
-    //Nom/prenom:
-    $pdf->SetXY(40, 50);
-    //first parameter defines the line height
-    $pdf->Write(0, $this->_firstname . ' ' . $this->_lastname);
-
-    // Naissance:
-    $pdf->SetXY(40, 58);
-    $pdf->Write(0, $this->_birthdate);
-    $pdf->SetXY(104, 58);
-    $pdf->Write(0, $this->_birthplace);
-
-    // Adresse
-    $pdf->SetXY(45, 66);
-    $pdf->Write(0, $this->_address . ' ' . $this->_postalcode . ' ' . $this->_city);
-
-    // $reason
     $motifs = explode(',', $this->getCmd(null, 'motifs')->execCmd());
-    foreach ($motifs as $motif) {
-      $pdf->SetXY(26, $yReasons[$motif]);
-      $pdf->SetFont('Arial', '', '15');
-      $pdf->Write(0, 'X');
-      $pdf->SetFont('Arial', '', '11');
-    }
 
-    // Date
-    $pdf->SetXY(36, 234);
-    $pdf->Write(0, $this->_city);
-    $pdf->SetXY(31, 243);
-    $pdf->Write(0, $date_day);
-    $pdf->SetXY(88, 242);
-    $pdf->Write(0, $time_day);
+    $fdfPath = self::_RESOURCE_PATH . 'form_' . $this->_firstname . '.fdf';
+    $fdf = file_get_contents(self::_RESOURCE_PATH . 'form.fdf');
+    $fdf = str_replace('NOMPRENOM', $this->_firstname . ' ' . $this->_lastname, $fdf);
+    $fdf = str_replace('DATENAISSANCE', $this->_birthdate, $fdf);
+    $fdf = str_replace('LIEUNAISSANCE', $this->_birthplace, $fdf);
+    $fdf = str_replace('ADRESSE', $this->_address . ' ' . $this->_postalcode . ' ' . $this->_city, $fdf);
+    $fdf = str_replace('MOTIF-1', in_array('travail', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-2', in_array('achats', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-3', in_array('sante', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-4', in_array('famille', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-5', in_array('handicap', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-6', in_array('sport_animaux', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-7', in_array('convocation', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-8', in_array('missions', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('MOTIF-9', in_array('enfants', $motifs) ? 'Oui' : 'Off', $fdf);
+    $fdf = str_replace('DATE', $this->_city, $fdf);
+    $fdf = str_replace('LIEU', $date_day, $fdf);
+    $fdf = str_replace('HEURE', $time_day, $fdf);
+    log::add(__CLASS__, 'debug', $fdf);
+    file_put_contents($fdfPath, $fdf);
 
+    // QR PDFs
+    $qr1Path = self::_RESOURCE_PATH . 'qr1_' . $this->_firstname . '.pdf';
     $qrPath = self::_RESOURCE_PATH . 'qr_' . $this->_firstname . '.png';
     $data = $this->generateQR($date_day, $time_day, $motifs, $qrPath);
-    $pdf->Image($qrPath, 140, 220, 43, 43, 'PNG');
+    $pdfQr1 = new FPDF('P', 'mm', 'A4');
+    $pdfQr1->AddPage();
+    $pdfQr1->Image($qrPath, 140, 254, 39, 39, 'PNG');
+    $pdfQr1->Output('F', $qr1Path);
+    log::add(self::_NAME, 'debug', __('QR code première page générée', __FILE__));
 
-    // second ldap_control_paged_result
-    $pdf->AddPage();
-    $pdf->Image($qrPath, 20, 20, 60, 60, 'PNG');
+    // second QR Code
+    $qr2Path = self::_RESOURCE_PATH . 'qr2_' . $this->_firstname . '.pdf';
+    $pdfQr2 = new FPDF('P', 'mm', 'A4');
+    $pdfQr2->AddPage();
+    $pdfQr2->Image($qrPath, 20, 20, 65, 65, 'PNG');
+    $pdfQr2->Output('F', $qr2Path);
+    log::add(self::_NAME, 'debug', __('QR code seconde page générée', __FILE__));
 
-    // Save the file
-    $pdf->Output('F', self::_RESOURCE_PATH . 'attestation_' . $this->_firstname . '.pdf', true);
+    // Merge form and the first QR code
+    $certifPath = self::_RESOURCE_PATH . 'certificate_new.pdf';
+    $page1TempPath = self::_RESOURCE_PATH . 'page1_' . $this->_firstname . '.pdf';
+    $checkMerge = shell_exec('pdftk ' . $certifPath . ' stamp ' . $qr1Path . ' output ' . $page1TempPath);
+    if ($checkMerge != 0) {
+      throw new Exception(__('Erreur au moment de l\'ajout du premier QR code à l\'attestation.', __FILE__));
+    }
+    log::add(self::_NAME, 'debug', __('QR code intégrée à la première page avec le formulaire rempli', __FILE__));
+
+    // Add second page with bigger QR code
+    $tmpForm = self::_RESOURCE_PATH . 'form_' . $this->_firstname . '.pdf';
+    $checkMerge = shell_exec('pdftk ' . $page1TempPath . ' ' . $qr2Path . ' cat output ' . $tmpForm);
+    if ($checkMerge != 0) {
+      throw new Exception(__('Erreur au moment de l\'ajout du second QR code à l\'attestation.', __FILE__));
+    }
+    log::add(self::_NAME, 'debug', __('Attestation sans formulaire complètement générée', __FILE__));
+
+    $attestationPath = self::_RESOURCE_PATH . 'attestation_' . $this->_firstname . '.pdf';
+    $checkFill = shell_exec('pdftk ' . $tmpForm . ' fill_form ' . $fdfPath . ' output ' . $attestationPath);
+    if ($checkFill != 0) {
+      throw new Exception(__('Erreur lors du remplissage du formulaire.', __FILE__));
+    }
+    log::add(self::_NAME, 'debug', __('Attestation complètement générée', __FILE__));
+
+    unlink($qr1Path);
+    unlink($qr2Path);
+    unlink($page1TempPath);
+    unlink($tmpForm);
+    unlink($fdfPath);
 
     if ($this->getConfiguration('autoSend')) {
       $this->send($date_day, $time_day);

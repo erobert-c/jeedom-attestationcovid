@@ -1,0 +1,84 @@
+%FDF-1.2
+%‚„œ”
+1 0 obj 
+<<
+/FDF 
+<<
+/Fields [
+<<
+/V /MOTIF-2
+/T (distinction Motif 2)
+>> 
+<<
+/V /MOTIF-1
+/T (distinction Motif 1)
+>> 
+<<
+/V (NOMPRENOM)
+/T (Nom PrÈnom)
+>> 
+<<
+/V (LIEUNAISSANCE)
+/T (Lieu de naissance)
+>> 
+<<
+/V (DATE)
+/T (Date)
+>> 
+<<
+/V (LIEU)
+/T (Lieu d'Ètablissement du justificatif)
+>> 
+<<
+/V (DATENAISSANCE)
+/T (Date de naissance)
+>> 
+<<
+/V /MOTIF-9
+/T (distinction Motif 9)
+>> 
+<<
+/V ()
+/T (Champ de signature)
+>> 
+<<
+/V /MOTIF-8
+/T (distinction Motif 8)
+>> 
+<<
+/V (HEURE)
+/T (Heure)
+>> 
+<<
+/V /MOTIF-7
+/T (distinction Motif 7)
+>> 
+<<
+/V /MOTIF-6
+/T (distinction Motif 6)
+>> 
+<<
+/V /MOTIF-5
+/T (distinction Motif 5)
+>> 
+<<
+/V /MOTIF-4
+/T (distinction Motif 4)
+>> 
+<<
+/V (ADRESSE)
+/T (Adresse du domicile)
+>> 
+<<
+/V /MOTIF-5
+/T (distinction Motif 3)
+>>]
+>>
+>>
+endobj 
+trailer
+
+<<
+/Root 1 0 R
+>>
+%%EOF
